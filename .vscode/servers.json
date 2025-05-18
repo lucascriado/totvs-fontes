@@ -1,0 +1,46 @@
+{
+	"version": "0.2.2",
+	"includes": [
+		"C:\\TOTVS\\Protheus\\include"
+	],
+	"permissions": {
+		"authorizationtoken": ""
+	},
+	"connectedServer": {},
+	"configurations": [
+		{
+			"id": "q1dp4zrjtu8maqoi9bblqsfb8svwo8",
+			"type": "totvs_server_protheus",
+			"name": "LOCAL",
+			"port": 8050,
+			"address": "localhost",
+			"buildVersion": "7.00.210324P",
+			"secure": false,
+			"includes": [
+				"C:\\TOTVS\\Protheus\\include"
+			],
+			"environments": [
+				"LOCAL"
+			],
+			"username": "admin",
+			"environment": "LOCAL",
+			"token": "djM6cTFkcDR6cmp0dThtYXFvaTliYmxxc2ZiOHN2d284OjE6bG9jYWxob3N0OjgwNTA6MDo3LjAwLjIxMDMyNFA6Mw==:djE6TE9DQUw6YWRtaW46QVNJeVcxVlI2VFRINitSTFlza1dzUG5JYUhiOFY3V0VBNDh3RTlOMWV2ST0=|djI6MTc0NzM5Mjc2NTowOjE6MQ==.W0EpYtryxXlRPOU1rdaeHcSSC7Fi/dX+g8b4CbPpWPhc8ZmGmejUuVGI/vLS5kcFzqvb0x/eEZ7RLVpg/Jhm3OS/xRhVOJF1JEGbDxhGHFpJf8DlWz4BbexDp11gBgntLGfzyYw9se+X1HIaI9vk1S5rvRQSjaLQ7BooYfRjTXoYf3Ah5f/xt+A16Rdh7Jvuo2datizkMoJf5rYVfWhmcD1EkspBIDYcdR5T/iK1nDY03j2nJg5cbdLN5MB8iGut1RPKg/rYxVS6+B6L9gbjOfKbO0iRBEYJdAUJM6E4YkTuMSWyVpV8HEEwcKrwCaGEFRKtnFC/umKCP3z/Ak6XDQ==",
+			"informations": {
+				"permissions": [],
+				"errorMessage": "",
+				"environmentDetectedType": "totvs_server_protheus",
+				"serverDetectedType": "totvs_server_protheus"
+			}
+		}
+	],
+	"savedTokens": [
+		[
+			"q1dp4zrjtu8maqoi9bblqsfb8svwo8:LOCAL",
+			{
+				"id": "q1dp4zrjtu8maqoi9bblqsfb8svwo8",
+				"token": "djM6cTFkcDR6cmp0dThtYXFvaTliYmxxc2ZiOHN2d284OjE6bG9jYWxob3N0OjgwNTA6MDo3LjAwLjIxMDMyNFA6Mw==:djE6TE9DQUw6YWRtaW46QVNJeVcxVlI2VFRINitSTFlza1dzUG5JYUhiOFY3V0VBNDh3RTlOMWV2ST0=|djI6MTc0NzM5Mjc2NTowOjE6MQ==.W0EpYtryxXlRPOU1rdaeHcSSC7Fi/dX+g8b4CbPpWPhc8ZmGmejUuVGI/vLS5kcFzqvb0x/eEZ7RLVpg/Jhm3OS/xRhVOJF1JEGbDxhGHFpJf8DlWz4BbexDp11gBgntLGfzyYw9se+X1HIaI9vk1S5rvRQSjaLQ7BooYfRjTXoYf3Ah5f/xt+A16Rdh7Jvuo2datizkMoJf5rYVfWhmcD1EkspBIDYcdR5T/iK1nDY03j2nJg5cbdLN5MB8iGut1RPKg/rYxVS6+B6L9gbjOfKbO0iRBEYJdAUJM6E4YkTuMSWyVpV8HEEwcKrwCaGEFRKtnFC/umKCP3z/Ak6XDQ=="
+			}
+		]
+	],
+	"lastConnectedServer": "q1dp4zrjtu8maqoi9bblqsfb8svwo8"
+}
