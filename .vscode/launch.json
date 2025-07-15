@@ -10,6 +10,7 @@
 			"smartclientBin": "C:\\TOTVS\\Protheus\\bin\\Smartclient\\Smartclient.exe",
 			"isMultiSession": true,
 			"enableTableSync": true,
+			"enableMultiThread": true,
 			"extendFeatures": {
 				"charDetails": false
 			}
@@ -68,6 +69,6 @@
 			"label": "xxxxx"
 		}
 	],
-	"lastProgramExecuted": "SIGAGFE",
+	"lastProgramExecuted": "SIGAMDI",
 	"lastProgramArguments": []
 }
