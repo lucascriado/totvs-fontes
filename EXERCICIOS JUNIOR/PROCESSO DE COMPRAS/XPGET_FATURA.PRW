@@ -5,7 +5,7 @@
 #include "tbiconn.ch"
 
 WSRESTFUL PVCONSULTAREST DESCRIPTION "Webservice para consulta de pedidos de venda" FORMAT APPLICATION_JSON
-    WSMETHOD GET V1 DESCRIPTION "Consulta de Pedido de Venda via GET" PATH "/V1/{Pedido}/{CNPJ}/{DataEmissao}" WSSYNTAX "/V1/{Pedido}/{CNPJ}/{DataEmissao}" TTALK "V1"
+    WSMETHOD GET V1 DESCRIPTION "Consulta de Pedido de Venda via GET" PATH "/V1/PEDIDODEVENDA" WSSYNTAX "/V1/PEDIDODEVENDA" TTALK "V1"
 END WSRESTFUL
 
 WSMETHOD GET V1 WSSERVICE PVCONSULTAREST
@@ -17,10 +17,9 @@ WSMETHOD GET V1 WSSERVICE PVCONSULTAREST
     Local oJsonRet  := JsonObject():New()
     Local oJsonProd := Nil
     Local aProdutos := {}
-
-    Local cNumPed   := AllTrim(Self:aUrlParms[2])
-    Local cCnpjCpf  := AllTrim(Self:aUrlParms[3])
-    Local cDataEmi  := AllTrim(Self:aUrlParms[4])
+    Local cNumPed   := AllTrim(jHeader["pedido"])
+    Local cCnpjCpf  := AllTrim(jHeader["cnpj"])
+    Local cDataEmi  := AllTrim(jHeader["dataemissao"])
     Local dDataEmi  := StoD(cDataEmi)
     Local cAliasPed := GetNextAlias()
     Local lAchou    := .F.
@@ -52,8 +51,7 @@ WSMETHOD GET V1 WSSERVICE PVCONSULTAREST
             %Table:SC6% SC6 ON SC6.C6_FILIAL = SC5.C5_FILIAL AND SC6.C6_NUM = SC5.C5_NUM AND SC6.D_E_L_E_T_ = ''
         LEFT JOIN
             %Table:SA1% SA1 ON SA1.A1_LOJA = SC5.C5_LOJACLI AND SA1.A1_COD = SC5.C5_CLIENTE AND SA1.D_E_L_E_T_ = ''
-        WHERE
-            AND SC5.C5_NUM = %Exp:cNumPed%
+        WHERE SC5.C5_NUM = %Exp:cNumPed%
             AND SA1.A1_CGC = %Exp:cCnpjCpf%
             AND SC5.C5_EMISSAO = %Exp:dDataEmi%
     EndSql
