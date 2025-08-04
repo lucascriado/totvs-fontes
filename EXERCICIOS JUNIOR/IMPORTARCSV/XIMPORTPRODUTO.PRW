@@ -13,6 +13,7 @@ User Function XIMPORTPRODUTO()
     Local oArquivo
     Local cLinha     := ""
     Local aLinha     := {}
+    Local aLog       := {}
     Local nLinha     := 0
 
     Local cCod       := ""
@@ -43,17 +44,21 @@ User Function XIMPORTPRODUTO()
             DbSetOrder(1)
             If DbSeek(xFilial("SB1") + PadR(cCod, TamSx3("B1_COD")[1]))
                 MsgInfo("Linha " + cValToChar(nLinha) + ": Produto já existe com código " + cCod, "Aviso")
+                aAdd(aLog, "Linha " + cValToChar(nLinha) + ": Produto já existe com código " + cCod)
                 Loop
             EndIf
 
             If __IncluiProduto(cCod, cDesc, cTipo, cUM, cLocPad, nLinha)
                 MsgInfo("Linha " + cValToChar(nLinha) + ": Produto " + cDesc + " incluído com sucesso!", "Sucesso")
+                aAdd(aLog, "Linha " + cValToChar(nLinha) + ": Produto " + cDesc + " incluído com sucesso!")
             Else
                 MsgInfo("Linha " + cValToChar(nLinha) + ": ERRO ao incluir Produto " + cDesc, "Erro")
+                aAdd(aLog, "Linha " + cValToChar(nLinha) + ": ERRO ao incluir Produto " + cDesc)
             EndIf
 
         EndDo
         oArquivo:Close()
+        __GravaLog(aLog, cArquivo)
     Else
         MsgStop("Erro ao abrir o arquivo CSV!", "Erro")
     EndIf
@@ -67,7 +72,7 @@ Static Function __IncluiProduto(cCod, cDesc, cTipo, cUM, cLocPad, nLinha)
     Local oSB1Mod   := Nil
     Local aErro     := {}
 
-    oModel:SetOperation(3)
+    oModel:SetOperation(3) // 3 - inclusão, 4 - editar, 5 - exclusão
     oModel:Activate()
 
     oSB1Mod := oModel:GetModel("SB1MASTER")
@@ -104,3 +109,22 @@ Static Function __IncluiProduto(cCod, cDesc, cTipo, cUM, cLocPad, nLinha)
     oModel:DeActivate()
 Return lDeuCerto
 
+Static Function __GravaLog(aLog, cOrigem)
+    Local cLogPath := StrTran(cOrigem, ".csv", "_log.txt")
+    Local nHandle  := 0
+    Local cLinha   := ""
+    Local i        := 0
+
+    nHandle := FCreate(cLogPath)
+    If nHandle < 0
+        MsgStop("Erro ao criar arquivo de log: " + cLogPath, "Erro")
+        Return
+    EndIf
+
+    For i := 1 To Len(aLog)
+        cLinha := aLog[i] + CRLF
+        FWrite(nHandle, cLinha)
+    Next
+
+    FClose(nHandle)
+Return

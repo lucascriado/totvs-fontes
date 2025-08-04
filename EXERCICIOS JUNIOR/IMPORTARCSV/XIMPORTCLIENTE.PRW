@@ -18,6 +18,7 @@ User Function XIMPORTCLIENTE()
     Local oArquivo
     Local cLinha     := ""
     Local aLinha     := {}
+    Local aLog       := {}
     Local nLinha     := 0
 
     Local cCodCli   := ""
@@ -58,6 +59,7 @@ User Function XIMPORTCLIENTE()
             DbSetOrder(3)
             If DbSeek(xFilial("SA1") + PadR(cCGC, TamSx3("A1_CGC")[1]))
                 MsgInfo("Linha " + cValToChar(nLinha) + ": Cliente já existe com CGC " + cCGC, "Aviso")
+                aAdd(aLog, "Linha " + cValToChar(nLinha) + ": Cliente já existe com CGC " + cCGC)
                 Loop
             EndIf
 
@@ -74,18 +76,41 @@ User Function XIMPORTCLIENTE()
                 { "A1_CGC"    , PadR(cCGC, TamSx3("A1_CGC")[1])         , NIL } ;
             }
 
-            If MsExecAuto({|x,y| MATA030(x,y)}, aArray, 3)
+            If MsExecAuto({|x,y| MATA030(x,y)}, aArray, 3) // 3 - inclusão, 4 - editar, 5 - exclusão
                 MsgInfo("Linha " + cValToChar(nLinha) + ": Cliente " + cFantasia + " incluído com sucesso!", "Sucesso")
+                aAdd(aLog, "Linha " + cValToChar(nLinha) + ": Cliente " + cFantasia + " incluído com sucesso!")
             Else
                 MostraErro()
                 MsgInfo("Linha " + cValToChar(nLinha) + ": ERRO ao incluir cliente " + cCodForn, "Erro")
+                aAdd(aLog, "Linha " + cValToChar(nLinha) + ": ERRO ao incluir Produto " + cCodForn)
             EndIf
         EndDo
 
         oArquivo:Close()
+        __GravaLog(aLog, cArquivo)
     Else
         MsgStop("Erro ao abrir o arquivo CSV!", "Erro")
     EndIf
 
     RestArea(aArea)
+Return
+
+Static Function __GravaLog(aLog, cOrigem)
+    Local cLogPath := StrTran(cOrigem, ".csv", "_log.txt")
+    Local nHandle  := 0
+    Local cLinha   := ""
+    Local i        := 0
+
+    nHandle := FCreate(cLogPath)
+    If nHandle < 0
+        MsgStop("Erro ao criar arquivo de log: " + cLogPath, "Erro")
+        Return
+    EndIf
+
+    For i := 1 To Len(aLog)
+        cLinha := aLog[i] + CRLF
+        FWrite(nHandle, cLinha)
+    Next
+
+    FClose(nHandle)
 Return

@@ -18,6 +18,7 @@ User Function XIMPORTFORNECEDOR()
     Local oArquivo
     Local cLinha     := ""
     Local aLinha     := {}
+    Local aLog       := {}
     Local nLinha     := 0
 
     Local cCodForn   := "" 
@@ -27,6 +28,7 @@ User Function XIMPORTFORNECEDOR()
     Local cEndereco  := "" 
     Local cEstado  := "" 
     Local cMunicipio := ""
+    Local cCodigoMunicipio := ""
     Local cTipo  := "" 
     Local cCgc  := "" 
 
@@ -47,9 +49,9 @@ User Function XIMPORTFORNECEDOR()
             cRazaoSocial := AllTrim(aLinha[nPosRSocial])
             cNomeFantasia:= AllTrim(aLinha[nPosNFantasia])
             cEndereco    := AllTrim(aLinha[nPosEnd])
+            cEstado      := AllTrim(aLinha[nPosNEst])
             cMunicipio   := AllTrim(aLinha[nPosMunicipio])
             cCodigoMunicipio := AllTrim(aLinha[nPosCodMunicipio])
-            cEstado      := AllTrim(aLinha[nPosNEst])
             cTipo        := AllTrim(aLinha[nPosTipo])
             cCgc         := AllTrim(aLinha[nPosCgc])
 
@@ -57,17 +59,21 @@ User Function XIMPORTFORNECEDOR()
             DbSetOrder(3)
             If DbSeek(xFilial("SA2") + PadR(cCgc, TamSx3("A2_CGC")[1]))
                 MsgInfo("Linha " + cValToChar(nLinha) + ": Fornecedor já existe com CGC " + cCgc, "Aviso")
+                aAdd(aLog, "Linha " + cValToChar(nLinha) + ": Fornecedor já existe com CGC " + cCgc)
                 Loop
             EndIf
 
-            If __IncluiFornecedor(cCodForn, cLojForn, cRazaoSocial, cNomeFantasia, cEndereco, cMunicipio, cEstado, cTipo, cCgc, nLinha)
+            If __IncluiFornecedor(cCodForn, cLojForn, cRazaoSocial, cNomeFantasia, cEndereco, cEstado, cCodigoMunicipio, cMunicipio, cTipo, cCgc, nLinha)
                 MsgInfo("Linha " + cValToChar(nLinha) + ": Fornecedor " + cNomeFantasia + " incluído com sucesso!", "Sucesso")
+                aAdd(aLog, "Linha " + cValToChar(nLinha) + ": Fornecedor " + cNomeFantasia + " incluído com sucesso!")
             Else
                 MsgInfo("Linha " + cValToChar(nLinha) + ": ERRO ao incluir fornecedor " + cNomeFantasia, "Erro")
+                aAdd(aLog, "Linha " + cValToChar(nLinha) + ": ERRO ao incluir fornecedor " + cNomeFantasia)
             EndIf
 
         EndDo
         oArquivo:Close()
+        __GravaLog(aLog, cArquivo)
     Else
         MsgStop("Erro ao abrir o arquivo CSV!", "Erro")
     EndIf
@@ -75,13 +81,13 @@ User Function XIMPORTFORNECEDOR()
     RestArea(aArea)
 Return
 
-Static Function __IncluiFornecedor(cCod, cLoja, cNome, cNomeFant, cEndereco, cMunicipio, cCodigoMunicipio, cEstado, cTipo, cCgc, nLinha)
+Static Function __IncluiFornecedor(cCod, cLoja, cNome, cNomeFant, cEndereco, cEstado, cCodigoMunicipio, cMunicipio, cTipo, cCgc, nLinha)
     Local lDeuCerto := .F.
     Local oModel    := FWLoadModel("MATA020M")
     Local oSA2Mod   := Nil
     Local aErro     := {}
 
-    oModel:SetOperation(3)
+    oModel:SetOperation(3) // 3 - inclusão, 4 - editar, 5 - exclusão
     oModel:Activate()
 
     oSA2Mod := oModel:getModel("SA2MASTER")
@@ -123,3 +129,22 @@ Static Function __IncluiFornecedor(cCod, cLoja, cNome, cNomeFant, cEndereco, cMu
     oModel:DeActivate()
 Return lDeuCerto
 
+Static Function __GravaLog(aLog, cOrigem)
+    Local cLogPath := StrTran(cOrigem, ".csv", "_log.txt")
+    Local nHandle  := 0
+    Local cLinha   := ""
+    Local i        := 0
+
+    nHandle := FCreate(cLogPath)
+    If nHandle < 0
+        MsgStop("Erro ao criar arquivo de log: " + cLogPath, "Erro")
+        Return
+    EndIf
+
+    For i := 1 To Len(aLog)
+        cLinha := aLog[i] + CRLF
+        FWrite(nHandle, cLinha)
+    Next
+
+    FClose(nHandle)
+Return
