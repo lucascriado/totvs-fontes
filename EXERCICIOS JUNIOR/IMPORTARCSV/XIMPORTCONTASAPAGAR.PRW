@@ -2,49 +2,57 @@
 #Include "TopConn.ch"
 
 User Function XIMPORTCONTASAPAGAR()
-    Local aVetSE2    := {}
-    Local xFilial   := "01"
-    Local cPrefixo  := "777"
-    Local cNumero   := "000000007"
-    Local cParcela  := "01"
-    Local cTipo     := "NF"
-    Local cNatureza := "001"
-    Local cFornece  := "000123"
-    Local cLoja     := "01"
-    Local cNomFor   := "Fornecedor 1"
-    Local dEmissao  := CToD("08/05/2025")
-    Local dVencto   := CToD("08/05/2025")
-    Local dVencReal := CToD("08/05/2025")
-    Local nValor    := 5500
-
+    Local cArquivo := "C:\report\import_contasapagar.csv"
+    Local oArquivo := FWFileReader():New(cArquivo)
+    Local aLinha, cLinha, nLinha := 0
+    Local aVetSE2
     Private lMsErroAuto := .F.
 
-    Begin Transaction
-        lMsErroAuto := .F.
+    If oArquivo:Open()
+        While oArquivo:HasLine()
+            nLinha++
+            cLinha := oArquivo:GetLine()
 
-        aAdd(aVetSE2, {"E2_FILIAL",  xFilial,    Nil})
-        aAdd(aVetSE2, {"E2_NUM",     cNumero,    Nil})
-        aAdd(aVetSE2, {"E2_PREFIXO", cPrefixo,   Nil})
-        aAdd(aVetSE2, {"E2_PARCELA", cParcela,   Nil})
-        aAdd(aVetSE2, {"E2_TIPO",    cTipo,      Nil})
-        aAdd(aVetSE2, {"E2_NATUREZ", cNatureza,  Nil})
-        aAdd(aVetSE2, {"E2_FORNECE", cFornece,   Nil})
-        aAdd(aVetSE2, {"E2_LOJA",    cLoja,      Nil})
-        aAdd(aVetSE2, {"E2_NOMFOR",  cNomFor,    Nil})
-        aAdd(aVetSE2, {"E2_EMISSAO", dEmissao,   Nil})
-        aAdd(aVetSE2, {"E2_VENCTO",  dVencto,    Nil})
-        aAdd(aVetSE2, {"E2_VENCREA", dVencReal,  Nil})
-        aAdd(aVetSE2, {"E2_VALOR",   nValor,     Nil})
+            If nLinha == 1
+                Loop
+            EndIf
 
-        // Aqui agora está certo
-        MSExecAuto({|a, b, c, d| FINA050(a, b, c, d)}, aVetSE2, {}, 3, .F.)
+            aLinha := StrTokArr(cLinha, ";")
+            aVetSE2 := {}
 
-        If lMsErroAuto
-            MostraErro()
-            DisarmTransaction()
-        Else
-            MsgInfo("Conta a Pagar incluída com sucesso!")
-        EndIf
-    End Transaction
+
+            Begin Transaction
+                lMsErroAuto := .F.
+
+                // colocar csv, os campos de db
+            
+                // aAdd(aVetSE2, {"E2_FILIAL",  aLinha[1], Nil}) passar com cfilant
+                aAdd(aVetSE2, {"E2_NUM",     aLinha[2], Nil})
+                aAdd(aVetSE2, {"E2_PREFIXO", aLinha[3], Nil})
+                aAdd(aVetSE2, {"E2_PARCELA", aLinha[4], Nil})
+                aAdd(aVetSE2, {"E2_TIPO",    aLinha[5], Nil})
+                aAdd(aVetSE2, {"E2_NATUREZ", aLinha[6], Nil})
+                aAdd(aVetSE2, {"E2_FORNECE", aLinha[7], Nil})
+                aAdd(aVetSE2, {"E2_LOJA",    aLinha[8], Nil})
+                aAdd(aVetSE2, {"E2_NOMFOR",  aLinha[9], Nil})
+                aAdd(aVetSE2, {"E2_EMISSAO", CToD(aLinha[10]), Nil})
+                aAdd(aVetSE2, {"E2_VENCTO",  CToD(aLinha[11]), Nil})
+                aAdd(aVetSE2, {"E2_VENCREA", CToD(aLinha[12]), Nil})
+                aAdd(aVetSE2, {"E2_VALOR",   Val(aLinha[13]), Nil})
+
+                MSExecAuto({|a, b, c, d| FINA050(a, b, c, d)}, aVetSE2, {}, 3, .F.)
+
+                If lMsErroAuto
+                    MostraErro()
+                    DisarmTransaction()
+                Else
+                    MsgInfo("Conta a Pagar incluída com sucesso! Num: " + aLinha[2])
+                EndIf
+            End Transaction
+        EndDo
+        oArquivo:Close()
+    Else
+        MsgInfo("Erro ao abrir o arquivo: " + cArquivo)
+    EndIf
 
 Return

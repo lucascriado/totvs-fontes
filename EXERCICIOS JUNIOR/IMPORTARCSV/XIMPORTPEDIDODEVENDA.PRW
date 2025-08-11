@@ -5,6 +5,7 @@ User Function XIMPORTPEDIDODEVENDA()
     Local cArquivo := "C:\report\import_pedidosdevenda.csv"
     Local oArquivo
 	oArquivo := FWFileReader():New(cArquivo)
+    
     Local aLinha, cLinha, nLinha := 0
     Local aCabec := {}, aItens := {}, aProd := {}
     Local cTipo, cA1Cod, cA1Loja, cClient, cLoja, cTipoCli, cPagamento

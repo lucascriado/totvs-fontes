@@ -2,47 +2,55 @@
 #Include "TopConn.ch"
 
 User Function XIMPORTRECEBER()
-    Local aVetSE1    := {}
-    Local xFilial   := "01"
-    Local cPrefixo  := "777"
-    Local cNumero   := "88888"
-    Local cParcela  := "01"
-    Local cTipo     := "NF"
-    Local cNatureza := "001"
-    Local cCliente  := "000003"
-    Local cLoja     := "01"
-    Local cNomCli   := "MARCOS DA SILVA"
-    Local dEmissao  := CToD("08/05/2025")
-    Local dVencto   := CToD("08/05/2025")
-    Local dVencReal := CToD("08/05/2025")
-    Local nValor    := 5500
-
+    Local cArquivo := "C:\report\import_contasreceber.csv"
+    Local oArquivo := FWFileReader():New(cArquivo)
+    Local aLinha, cLinha, nLinha := 0
+    Local aVetSE1
     Private lMsErroAuto := .F.
 
-    Begin Transaction
+    If oArquivo:Open()
+        While oArquivo:HasLine()
+            nLinha++
+            cLinha := oArquivo:GetLine()
 
-        aAdd(aVetSE1, {"E1_FILIAL",  xFilial,    Nil})
-        aAdd(aVetSE1, {"E1_NUM",     cNumero,    Nil})
-        aAdd(aVetSE1, {"E1_PREFIXO", cPrefixo,   Nil})
-        aAdd(aVetSE1, {"E1_PARCELA", cParcela,   Nil})
-        aAdd(aVetSE1, {"E1_TIPO",    cTipo,      Nil})
-        aAdd(aVetSE1, {"E1_NATUREZ", cNatureza,  Nil})
-        aAdd(aVetSE1, {"E1_CLIENTE", cCliente,   Nil})
-        aAdd(aVetSE1, {"E1_LOJA",    cLoja,      Nil})
-        aAdd(aVetSE1, {"E1_NOMCLI",  cNomCli,    Nil})
-        aAdd(aVetSE1, {"E1_EMISSAO", dEmissao,   Nil})
-        aAdd(aVetSE1, {"E1_VENCTO",  dVencto,    Nil})
-        aAdd(aVetSE1, {"E1_VENCREA", dVencReal,  Nil})
-        aAdd(aVetSE1, {"E1_VALOR",   nValor,     Nil})
-        
-        MSExecAuto({|x,y| FINA040(x,y)}, aVetSE1, 3)
+            If nLinha == 1
+                Loop
+            EndIf
 
-        If lMsErroAuto
-            MostraErro()
-            DisarmTransaction()
-        Else
-            MsgInfo("Conta a Receber incluída com sucesso!")
-        EndIf
-    End Transaction
+            aLinha := StrTokArr(cLinha, ";")
+            aVetSE1 := {}
+
+
+            Begin Transaction
+                lMsErroAuto := .F.
+
+                aAdd(aVetSE1, {"E1_FILIAL",  aLinha[1], Nil})
+                aAdd(aVetSE1, {"E1_NUM",     aLinha[2], Nil})
+                aAdd(aVetSE1, {"E1_PREFIXO", aLinha[3], Nil})
+                aAdd(aVetSE1, {"E1_PARCELA", aLinha[4], Nil})
+                aAdd(aVetSE1, {"E1_TIPO",    aLinha[5], Nil})
+                aAdd(aVetSE1, {"E1_NATUREZ", aLinha[6], Nil})
+                aAdd(aVetSE1, {"E1_CLIENTE", aLinha[7], Nil})
+                aAdd(aVetSE1, {"E1_LOJA",    aLinha[8], Nil})
+                aAdd(aVetSE1, {"E1_NOMCLI",  aLinha[9], Nil})
+                aAdd(aVetSE1, {"E1_EMISSAO", CToD(aLinha[10]), Nil})
+                aAdd(aVetSE1, {"E1_VENCTO",  CToD(aLinha[11]), Nil})
+                aAdd(aVetSE1, {"E1_VENCREA", CToD(aLinha[12]), Nil})
+                aAdd(aVetSE1, {"E1_VALOR",   Val(aLinha[13]), Nil})
+
+                MSExecAuto({|a, b| FINA040(a, b)}, aVetSE1, 3)
+
+                If lMsErroAuto
+                    MostraErro()
+                    DisarmTransaction()
+                Else
+                    MsgInfo("Conta a Receber incluída com sucesso! Num: " + aLinha[2])
+                EndIf
+            End Transaction
+        EndDo
+        oArquivo:Close()
+    Else
+        MsgInfo("Erro ao abrir o arquivo: " + cArquivo)
+    EndIf
 
 Return
