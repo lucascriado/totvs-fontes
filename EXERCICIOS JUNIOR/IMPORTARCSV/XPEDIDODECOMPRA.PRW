@@ -8,34 +8,28 @@ Local aCabec := {}
 Local aItens := {}
 Local aLinha := {}
 Local nX := 0
-Local cDoc := ""
+Local cDoc := "000006"
 Local nOpc := 3
 Local xFilial := "01"
 
 PRIVATE lMsErroAuto := .F.
 
-// PREPARE ENVIRONMENT EMPRESA "01" FILIAL "1001" MODULO "COM"
-dbSelectArea("SC7")
+DbSelectArea("SC7")
+DbSetOrder(1)
 
-// Obter número do pedido
-cDoc := GetSXENum("SC7","C7_NUM")
-SC7->(dbSetOrder(1))
-
-// Aqui você deveria passar a filial correta (exemplo "01")
-
-// Monta o cabeçalho básico
-aadd(aCabec,{"C7_FILIAL" ,xFilial})
-aadd(aCabec,{"C7_NUM" ,cDoc})
+// cabeçalho
+aadd(aCabec,{"C7_FILIAL"  ,xFilial})
+aadd(aCabec,{"C7_NUM"     ,cDoc})
 aadd(aCabec,{"C7_EMISSAO" ,dDataBase})
-aadd(aCabec,{"C7_FORNECE" ,"000001"})   // Fornecedor válido com 6 dígitos
-aadd(aCabec,{"C7_LOJA" ,"01"})
-aadd(aCabec,{"C7_COND" ,"001"})
+aadd(aCabec,{"C7_FORNECE" ,"000001"})
+aadd(aCabec,{"C7_LOJA"    ,"01"})
+aadd(aCabec,{"C7_COND"    ,"001"})
 aadd(aCabec,{"C7_CONTATO" ,"AUTO"})
-aadd(aCabec,{"C7_FILENT" ,"01"})       // Filial entrada, ex: "01"
+aadd(aCabec,{"C7_FILENT"  ,"01"})
 aadd(aCabec,{"C7_TPFRETE" ,"C"})
-aadd(aCabec,{"C7_FRETE" ,15})
+aadd(aCabec,{"C7_FRETE"   ,15})
 
-// Monta o item básico
+// itens
 For nX := 1 To 1
     aLinha := {}
     aadd(aLinha,{"C7_PRODUTO" ,"000000000000004",Nil})
@@ -45,14 +39,12 @@ For nX := 1 To 1
     aadd(aItens,aLinha)
 Next nX
 
-// Chamada do MSExecAuto sem rateio e adiantamento
 MSExecAuto({|a,b,c,d,e,f,g,h| MATA120(a,b,c,d,e,f,g,h)},1,aCabec,aItens,nOpc,.F.)
 
 If !lMsErroAuto
-    ConOut("Incluido PC: "+cDoc)
+    MsgInfo("Pedido de Compra N° "+cDoc+" incluído com sucesso!","Aviso")
 Else
-    
-    ConOut("Erro na inclusao: "+ MostraErro())
+    MsgInfo("Erro na inclusao: "+ MostraErro(),"Erro")
 EndIf
 
 Return

@@ -24,7 +24,7 @@ User Function XIMPORTRECEBER()
             Begin Transaction
                 lMsErroAuto := .F.
 
-                aAdd(aVetSE1, {"E1_FILIAL",  aLinha[1], Nil})
+                aAdd(aVetSE1, {"E1_FILIAL",  xFilial("SE1"), Nil})
                 aAdd(aVetSE1, {"E1_NUM",     aLinha[2], Nil})
                 aAdd(aVetSE1, {"E1_PREFIXO", aLinha[3], Nil})
                 aAdd(aVetSE1, {"E1_PARCELA", aLinha[4], Nil})

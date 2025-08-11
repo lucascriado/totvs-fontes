@@ -24,9 +24,7 @@ User Function XIMPORTCONTASAPAGAR()
             Begin Transaction
                 lMsErroAuto := .F.
 
-                // colocar csv, os campos de db
-            
-                // aAdd(aVetSE2, {"E2_FILIAL",  aLinha[1], Nil}) passar com cfilant
+                aAdd(aVetSE2, {"E2_FILIAL",  xFilial("SE2"), Nil})
                 aAdd(aVetSE2, {"E2_NUM",     aLinha[2], Nil})
                 aAdd(aVetSE2, {"E2_PREFIXO", aLinha[3], Nil})
                 aAdd(aVetSE2, {"E2_PARCELA", aLinha[4], Nil})
